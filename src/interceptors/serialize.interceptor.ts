@@ -2,8 +2,12 @@ import { CallHandler, ExecutionContext, NestInterceptor } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
 import { Observable, map } from 'rxjs';
 
+interface ClassConstructor {
+  new (...args: any[]): object;
+}
+
 export class SerializeInterceptor implements NestInterceptor {
-  constructor(private dto: any) {}
+  constructor(private dto: ClassConstructor) {}
 
   intercept(
     context: ExecutionContext,
