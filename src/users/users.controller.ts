@@ -1,10 +1,46 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { CreateUserDto } from './dtos/create-user.dto';
+import { UsersService } from './users.service';
+import { UpdateUserDto } from './dtos/update-user.dto';
 
 @Controller('auth')
 export class UsersController {
+  constructor(private usersService: UsersService) {}
+
   @Post('/signup')
   createUser(@Body() body: CreateUserDto) {
-    console.log(body);
+    return this.usersService.create(body.email, body.password);
+  }
+
+  @Get('/:id')
+  //* Used id as type string because every part of incoming request is a string
+  //* Even if it looks like /auth/241524
+  findUser(@Param('id') id: string) {
+    //* We need to parse id into Int because Nest does not
+    return this.usersService.findOne(parseInt(id));
+  }
+
+  @Get()
+  findAllUsers(@Query('email') email: string) {
+    return this.usersService.find(email);
+  }
+
+  @Patch('/:id')
+  updateUser(@Param('id') id: string, @Body() body: UpdateUserDto) {
+    return this.usersService.update(parseInt(id), body);
+  }
+
+  @Delete('/:id')
+  removeUser(@Param('id') id: string) {
+    return this.usersService.remove(parseInt(id));
   }
 }
