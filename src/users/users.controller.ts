@@ -1,5 +1,6 @@
 import {
   Body,
+  ClassSerializerInterceptor,
   Controller,
   Delete,
   Get,
@@ -7,6 +8,7 @@ import {
   Patch,
   Post,
   Query,
+  UseInterceptors,
 } from '@nestjs/common';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UsersService } from './users.service';
@@ -21,6 +23,13 @@ export class UsersController {
     return this.usersService.create(body.email, body.password);
   }
 
+  //A downside of this approach
+  //admin route should see extra properties for example: {id, email, age, name}
+  //where a particular user should see far less like {id, email}
+  //noth of these requests will reach to same findOne and get same results
+  //* approach: need to supply data based on route
+  //* fix: custom interceptor to handle response data
+  @UseInterceptors(ClassSerializerInterceptor)
   @Get('/:id')
   //* Used id as type string because every part of incoming request is a string
   //* Even if it looks like /auth/241524
