@@ -20,6 +20,7 @@ export function Serialize(dto: any) {
 }
 
 @Controller('auth')
+@Serialize(UserDto)
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
@@ -34,7 +35,6 @@ export class UsersController {
   //noth of these requests will reach to same findOne and get same results
   //* approach: need to supply data based on route
   //* fix: custom interceptor to handle response data
-  @Serialize(UserDto)
   @Get('/:id')
   //* Used id as type string because every part of incoming request is a string
   //* Even if it looks like /auth/241524
