@@ -13,6 +13,11 @@ import { CreateUserDto } from './dtos/create-user.dto';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { SerializeInterceptor } from 'src/interceptors/serialize.interceptor';
+import { UserDto } from './dtos/user.dto';
+
+export function Serialize(dto: any) {
+  return UseInterceptors(new SerializeInterceptor(dto));
+}
 
 @Controller('auth')
 export class UsersController {
@@ -29,7 +34,7 @@ export class UsersController {
   //noth of these requests will reach to same findOne and get same results
   //* approach: need to supply data based on route
   //* fix: custom interceptor to handle response data
-  @UseInterceptors(SerializeInterceptor)
+  @Serialize(UserDto)
   @Get('/:id')
   //* Used id as type string because every part of incoming request is a string
   //* Even if it looks like /auth/241524
