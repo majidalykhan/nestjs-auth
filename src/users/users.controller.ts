@@ -7,6 +7,7 @@ import {
   Patch,
   Post,
   Query,
+  Session,
   UseInterceptors,
 } from '@nestjs/common';
 import { CreateUserDto } from './dtos/create-user.dto';
@@ -28,9 +29,23 @@ export class UsersController {
     private authService: AuthService,
   ) {}
 
+  @Get('/whoami')
+  whoAmI(@Session() session: any) {
+    return this.usersService.findOne(session.userId);
+  }
+
   @Post('/signup')
-  createUser(@Body() body: CreateUserDto) {
-    return this.authService.signup(body.email, body.password);
+  async createUser(@Body() body: CreateUserDto, @Session() session: any) {
+    const user = await this.authService.signup(body.email, body.password);
+    session.userId = user.id;
+    return user;
+  }
+
+  @Post('/signin')
+  async loginUser(@Body() body: CreateUserDto, @Session() session: any) {
+    const user = await this.authService.signin(body.email, body.password);
+    session.userId = user.id;
+    return user;
   }
 
   //A downside of this approach
@@ -38,18 +53,13 @@ export class UsersController {
   //where a particular user should see far less like {id, email}
   //noth of these requests will reach to same findOne and get same results
   //* approach: need to supply data based on route
-  //* fix: custom interceptor to handle response data
+  //* fix: custom interceptor to handle response data, used above controller wide
   @Get('/:id')
   //* Used id as type string because every part of incoming request is a string
   //* Even if it looks like /auth/241524
   findUser(@Param('id') id: string) {
     //* We need to parse id into Int because Nest does not
     return this.usersService.findOne(parseInt(id));
-  }
-
-  @Post('/signin')
-  loginUser(@Body() body: CreateUserDto) {
-    return this.authService.signin(body.email, body.password);
   }
 
   @Get()
