@@ -47,6 +47,11 @@ export class UsersController {
     return this.usersService.findOne(parseInt(id));
   }
 
+  @Post('/signin')
+  loginUser(@Body() body: CreateUserDto) {
+    return this.authService.signin(body.email, body.password);
+  }
+
   @Get()
   findAllUsers(@Query('email') email: string) {
     return this.usersService.find(email);
