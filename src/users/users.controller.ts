@@ -48,6 +48,11 @@ export class UsersController {
     return user;
   }
 
+  @Post('/signout')
+  signOut(@Session() session: any) {
+    session.userId = null;
+  }
+
   //A downside of this approach
   //admin route should see extra properties for example: {id, email, age, name}
   //where a particular user should see far less like {id, email}

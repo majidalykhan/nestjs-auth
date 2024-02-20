@@ -43,7 +43,7 @@ export class AppModule {
     consumer
       .apply(
         cookieSession({
-          keys: [process.env.COOKIE_KEY],
+          keys: [`${process.env.COOKIE_KEY}`],
         }),
       )
       .forRoutes('*');
