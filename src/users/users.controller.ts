@@ -20,6 +20,7 @@ import { AuthService } from './auth.service';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { User } from './user.entity';
 import { AuthGuard } from 'src/guards/auth.guard';
+import { AdminGuard } from 'src/guards/admin.guard';
 
 export function Serialize(dto: any) {
   return UseInterceptors(new SerializeInterceptor(dto));
@@ -32,6 +33,15 @@ export class UsersController {
     private usersService: UsersService,
     private authService: AuthService,
   ) {}
+
+  @Get('/admin-route')
+  @UseGuards(AdminGuard)
+  adminRoute(@CurrentUser() user: User) {
+    if (user) {
+      return 'You are allowed';
+    }
+    return 'Not allowed';
+  }
 
   @Get('/whoami')
   //AuthGuard will check if user signed in or not
